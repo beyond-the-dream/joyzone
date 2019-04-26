@@ -66,8 +66,13 @@ logging:
 using:
   spring:
     schedulerFactory: false
-secretId: AKIDDJF0rh6KckRDjCnpyeeVBkYQNGMIDg9J
-secretKey:  1IRmyGn3FWlvukPSXKAQFy3vgF05rUwk
+tencent:
+  secretId: AKIDDJF0rh6KckRDjCnpyeeVBkYQNGMIDg9J
+tencent:
+  secretKey:  1IRmyGn3FWlvukPSXKAQFy3vgF05rUwk
 bucket:  joyzone-1257127706
 fileSize: 2048000
 scale: 0.8
+jiguang:
+  appKey: 5993d0f3ef4f07393eaa7208
+  masterSecret: 978a320f15de2977a596e7d7
