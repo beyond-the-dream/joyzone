@@ -11,10 +11,10 @@ import com.qcloud.cos.region.Region;
 
 @Configuration
 public class COSConfig {
-	@Value("${tencent.secretId}")
+	@Value("${secretId}")
 	private String secretId;
 	
-	@Value("${tencent.secretKey}")
+	@Value("${secretKey}")
 	private String secretKey;
 	
 	@Value("${bucket}")
