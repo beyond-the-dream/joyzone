@@ -42,9 +42,9 @@
 		<qcloud.version>5.5.1</qcloud.version>
 		<coobird.version>0.4.8</coobird.version>
 		<jmimemagic.version>0.1.5</jmimemagic.version>
-		<jsms.version>1.2.8</jsms.version>
 		<gson.version>2.3</gson.version>
 		<jmimemagic.version>0.1.5</jmimemagic.version>
+		<yunpian.version>1.2.7</yunpian.version>
 		<pack-name>${project.artifactId}-${project.version}.jar</pack-name>
 	</properties>
 
@@ -260,14 +260,14 @@
 			<version>${jmimemagic.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>cn.jpush.api</groupId>
-			<artifactId>jsms-client</artifactId>
-			<version>${jsms.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>${gson.version}</version>
+		</dependency>
+		<dependency>
+		  <groupId>com.yunpian.sdk</groupId>
+    	  <artifactId>yunpian-java-sdk</artifactId>
+		  <version>${yunpian.version}</version>
 		</dependency>
 	</dependencies>
 

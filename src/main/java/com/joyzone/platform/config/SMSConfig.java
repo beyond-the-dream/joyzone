@@ -4,20 +4,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import cn.jsms.api.common.SMSClient;
+import com.yunpian.sdk.YunpianClient;
 
 @Configuration
-public class SEMEConfig {
+public class SMSConfig {
 	
-	@Value("${jiguang.appKey}")
-	private String appKey;
-	
-	@Value("${jiguang.masterSecret}")
-	private String masterSecret;
+	@Value("${yunpian.sms.apiKey}")
+	private String apiKey;
 	
 	@Bean(name="smsClient")
-	public SMSClient newClient() {
-		SMSClient client = new SMSClient(masterSecret, appKey);
+	public YunpianClient newClient() {
+		YunpianClient client = new YunpianClient(apiKey).init();
 		return client;
 	}
 
