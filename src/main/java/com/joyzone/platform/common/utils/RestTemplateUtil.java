@@ -65,7 +65,12 @@ public class RestTemplateUtil  {
         String responseData="";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        if(PublicUtil.isNotEmpty(headerParams)) {
+        if(PublicUtil.isEmpty(headerParams)) {
+        	headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+        	headers.add("content-type", MediaType.APPLICATION_JSON_VALUE);
+        }
+        else
+        {
         	for(Map.Entry<String, String> entry : headerParams.entrySet()) {
         		headers.add(entry.getKey(), entry.getValue());
         	}

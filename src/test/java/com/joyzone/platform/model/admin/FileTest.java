@@ -31,8 +31,13 @@ public class FileTest {
 	}
 
 	
+//	@Test
+//	public void testToken() {
+//		chatService.getToken();
+//	}
+//	
 	@Test
-	public void testToken() {
-		chatService.getToken();
+	public void testRegister() {
+		chatService.registerUser("1113", "123456");
 	}
 }

@@ -2,6 +2,8 @@ package com.joyzone.platform.core.dto;
 
 import java.util.Date;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 public class EasemobUser {
 	
 	/**
@@ -17,18 +19,22 @@ public class EasemobUser {
 	/**
 	 * easemob user create time
 	 */
+	@JsonProperty("created")
 	private Date createTime;
 	
+	@JsonProperty("modified")
 	private Date updateTime;
 	
 	/**
 	 * easemob user name
 	 */
+	@JsonProperty("username")
 	private String userName;
 	
 	/**
 	 * easemob user status
 	 */
+	@JsonProperty("activated")
 	private boolean status;
 
 	public String getUuid() {

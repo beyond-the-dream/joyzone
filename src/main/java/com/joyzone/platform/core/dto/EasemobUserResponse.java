@@ -12,7 +12,7 @@ public class EasemobUserResponse {
 	
 	private String uri;
 	
-	private List<EasemobUser> users;
+	private List<EasemobUser> entities;
 	
 	private Integer duration;
 	
@@ -52,12 +52,12 @@ public class EasemobUserResponse {
 		this.uri = uri;
 	}
 
-	public List<EasemobUser> getUsers() {
-		return users;
+	public List<EasemobUser> getEntities() {
+		return entities;
 	}
 
-	public void setUsers(List<EasemobUser> users) {
-		this.users = users;
+	public void setEntities(List<EasemobUser> entities) {
+		this.entities = entities;
 	}
 
 	public Integer getDuration() {

@@ -82,13 +82,19 @@ public class ChatService {
 	 */
 	public EasemobUser registerUser(String userName, String password) {
 		String userOpeUrl = easemob.getOpeUsersUrl();
-		Map<String, String> headers = new HashMap<String, String>();
+		Map<String,String> headers = Maps.newHashMap();
+		headers.put("content-type", MediaType.APPLICATION_JSON_VALUE);
+		headers.put("Acccept", MediaType.APPLICATION_JSON_VALUE);
 		headers.put(Constants.EASEMOB_HEADER_AUTH, "Bearer " + getToken().getToken());
+		Map<String,String> params = Maps.newHashMap();
+		params.put("username", userName);
+		params.put("password", password);
+		String jsonStr = JacksonUtil.deserializer(params);
 		try {
-			String result = RestTemplateUtil.sendhttp(userOpeUrl, null, headers, null);
+			String result = RestTemplateUtil.sendJson(userOpeUrl, jsonStr, headers, null);
 			if(PublicUtil.isNotEmpty(result)) {
 				EasemobUserResponse easemobUser = JacksonUtil.parseJson(result, EasemobUserResponse.class);
-				return easemobUser.getUsers().get(0);
+				return easemobUser.getEntities().get(0);
 			}
 		} catch (Exception e) {
 			logger.error("Register easemob user and error happended...");
