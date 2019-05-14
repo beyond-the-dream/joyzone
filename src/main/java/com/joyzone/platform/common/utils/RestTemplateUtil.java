@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 
 public class RestTemplateUtil  {
 	
-    public static String sendhttp(String url,Map<String, String> params) throws Exception{
+    public static String sendhttp(String url,Map<String, String> params,Map<String, String> headerParams, HttpMethod method) throws Exception{
         String responseData="";
         RestTemplate restTemplate = new RestTemplate();
         MultiValueMap<String, String> newParams = new LinkedMultiValueMap<>();
@@ -40,8 +40,18 @@ public class RestTemplateUtil  {
             }
         }
         HttpHeaders headers = new HttpHeaders();
+        if(PublicUtil.isNotEmpty(headerParams)) {
+        	for(Map.Entry<String, String> entry : headerParams.entrySet()) {
+        		headers.add(entry.getKey(), entry.getValue());
+        	}
+        }
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<MultiValueMap<String, String>>(newParams, headers);
-        ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(url, entity, String.class);
+        ResponseEntity<String> stringResponseEntity = null;
+        if(null == method || method.equals(HttpMethod.POST)) {
+        	stringResponseEntity = restTemplate.postForEntity(url, entity, String.class);
+        }else if(method.equals(HttpMethod.GET)) {
+        	stringResponseEntity = restTemplate.getForEntity(url, String.class, entity);
+        }
         if(null!=stringResponseEntity){
             HttpStatus httpCode = stringResponseEntity.getStatusCode();
              if(httpCode.value()==200){
@@ -50,7 +60,7 @@ public class RestTemplateUtil  {
         }
         return responseData;
     }
-    public static String sendhttps(String url,Map<String, String> params) throws Exception{
+    public static String sendhttps(String url,Map<String, String> params, Map<String, String> headerParams) throws Exception{
         String responseData="";
         CloseableHttpClient httpClient = createSSLInsecureClient();
         HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
@@ -62,6 +72,11 @@ public class RestTemplateUtil  {
             }
         }
         HttpHeaders headers = new HttpHeaders();
+        if(PublicUtil.isNotEmpty(headerParams)) {
+        	for(Map.Entry<String, String> entry : headerParams.entrySet()) {
+        		headers.add(entry.getKey(), entry.getValue());
+        	}
+        }
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<MultiValueMap<String, String>>(newParams, headers);
         ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(url, entity, String.class);
         if(null!=stringResponseEntity){

@@ -79,3 +79,10 @@ tencent:
 yunpian:  
   sms:
     apiKey: 129afa0712a781de56500b720e5f2c6e
+easemob:
+   host: http://a1.easemob.com/
+   orgName: 1113190505010089
+   appName: joyzone
+   grantType: client_credentials
+   clientId: YXA6eWR-kG9AEemCpmWWikCXLA
+   clientSecret: YXA6XYMzIlVp-y-0BcbYbuxQC1nbDCg
