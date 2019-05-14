@@ -36,8 +36,13 @@ public class FileTest {
 //		chatService.getToken();
 //	}
 //	
+//	@Test
+//	public void testRegister() {
+//		chatService.registerUser("1113", "123456");
+//	}
+	
 	@Test
-	public void testRegister() {
-		chatService.registerUser("1113", "123456");
+	public void changePwd() {
+		chatService.changePwd("1113", "223456");
 	}
 }

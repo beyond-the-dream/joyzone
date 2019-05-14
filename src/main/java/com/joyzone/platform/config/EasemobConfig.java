@@ -98,4 +98,8 @@ public class EasemobConfig {
 	public String getChatGrpUrl() {
 		return this.host + this.orgName + "/" + this.appName + "/chargroups";
 	}
+	
+	public String getPwdUrl() {
+		return this.host + this.orgName + "/" + this.appName + "/users/{userName}/password";
+	}
 }

@@ -9,8 +9,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
@@ -74,6 +74,14 @@ public class ChatService {
 		return null;
 	}
 	
+	public Map<String,String> getAuthHeaders(){
+		Map<String,String> headers = Maps.newHashMap();
+		headers.put("content-type", MediaType.APPLICATION_JSON_VALUE);
+		headers.put("Acccept", MediaType.APPLICATION_JSON_VALUE);
+		headers.put(Constants.EASEMOB_HEADER_AUTH, "Bearer " + getToken().getToken());
+		return headers;
+	}
+	
 	/**
 	 * Register easemob user
 	 * @param userName
@@ -82,10 +90,7 @@ public class ChatService {
 	 */
 	public EasemobUser registerUser(String userName, String password) {
 		String userOpeUrl = easemob.getOpeUsersUrl();
-		Map<String,String> headers = Maps.newHashMap();
-		headers.put("content-type", MediaType.APPLICATION_JSON_VALUE);
-		headers.put("Acccept", MediaType.APPLICATION_JSON_VALUE);
-		headers.put(Constants.EASEMOB_HEADER_AUTH, "Bearer " + getToken().getToken());
+		Map<String,String> headers = getAuthHeaders();
 		Map<String,String> params = Maps.newHashMap();
 		params.put("username", userName);
 		params.put("password", password);
@@ -100,5 +105,23 @@ public class ChatService {
 			logger.error("Register easemob user and error happended...");
 		}
 		return null;
+	}
+	
+	public boolean changePwd(String userName, String newPwd) {
+		String pwdUrl = easemob.getPwdUrl();
+		pwdUrl = pwdUrl.replace("{userName}", userName);
+		Map<String,String> headers = getAuthHeaders();
+		Map<String,String> params = Maps.newHashMap();
+		params.put("newpassword", newPwd);
+		String jsonStr = JacksonUtil.deserializer(params);
+		try {
+			String result = RestTemplateUtil.sendJson(pwdUrl, jsonStr, headers, HttpMethod.PUT);
+			if(PublicUtil.isNotEmpty(result)) {
+				return true;
+			}
+		}catch(Exception e) {
+			logger.error("Change PWD error happended...");
+		}
+		return false;
 	}
 }
