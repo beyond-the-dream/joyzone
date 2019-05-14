@@ -60,25 +60,23 @@ public class RestTemplateUtil  {
         }
         return responseData;
     }
-    public static String sendhttps(String url,Map<String, String> params, Map<String, String> headerParams) throws Exception{
+    
+    public static String sendJson(String url, String jsonStr,Map<String, String> headerParams, HttpMethod method) throws Exception{
         String responseData="";
-        CloseableHttpClient httpClient = createSSLInsecureClient();
-        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        RestTemplate restTemplate = new RestTemplate(clientHttpRequestFactory);
-        MultiValueMap<String, String> newParams = new LinkedMultiValueMap<>();
-        if (params != null) {
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                newParams.add(entry.getKey(), entry.getValue());
-            }
-        }
+        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         if(PublicUtil.isNotEmpty(headerParams)) {
         	for(Map.Entry<String, String> entry : headerParams.entrySet()) {
         		headers.add(entry.getKey(), entry.getValue());
         	}
         }
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<MultiValueMap<String, String>>(newParams, headers);
-        ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(url, entity, String.class);
+        HttpEntity<String> entity = new HttpEntity<String>(jsonStr, headers);
+        ResponseEntity<String> stringResponseEntity = null;
+        if(null == method || method.equals(HttpMethod.POST)) {
+        	stringResponseEntity = restTemplate.postForEntity(url, entity, String.class);
+        }else if(method.equals(HttpMethod.GET)) {
+        	stringResponseEntity = restTemplate.getForEntity(url, String.class, entity);
+        }
         if(null!=stringResponseEntity){
             HttpStatus httpCode = stringResponseEntity.getStatusCode();
              if(httpCode.value()==200){

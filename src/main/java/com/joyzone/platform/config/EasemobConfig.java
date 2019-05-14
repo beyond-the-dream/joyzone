@@ -1,7 +1,9 @@
 package com.joyzone.platform.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
+@Component
 @ConfigurationProperties(prefix="easemob")
 public class EasemobConfig {
 	

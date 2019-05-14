@@ -1,9 +1,13 @@
 package com.joyzone.platform.core.dto;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 public class EasemobToken {
 	
+	@JsonProperty("access_token")
 	private String token;
 	
+	@JsonProperty("expires_in")
 	private Integer expiresIn;
 	
 	private String application;

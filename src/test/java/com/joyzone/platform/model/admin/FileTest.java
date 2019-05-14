@@ -12,18 +12,27 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.joyzone.platform.common.utils.FileUtil;
+import com.joyzone.platform.core.service.ChatService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest()
 @WebAppConfiguration
 public class FileTest {
 	
+//	@Autowired
+//	private FileUtil util;
+	
 	@Autowired
-	private FileUtil util;
+	private ChatService chatService;
 	
 	@Test
 	public void testFile() throws FileNotFoundException {
 		//util.uploadPersonalImg(new FileInputStream(new File("d:\\ip.properties")), "ip.properties");
 	}
 
+	
+	@Test
+	public void testToken() {
+		chatService.getToken();
+	}
 }

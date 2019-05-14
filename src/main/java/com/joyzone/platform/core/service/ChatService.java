@@ -5,11 +5,15 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.joyzone.platform.common.utils.Constants;
 import com.joyzone.platform.common.utils.JacksonUtil;
 import com.joyzone.platform.common.utils.PublicUtil;
@@ -20,7 +24,7 @@ import com.joyzone.platform.core.dto.EasemobUser;
 import com.joyzone.platform.core.dto.EasemobUserResponse;
 
 
-@Component
+@Service
 public class ChatService {
 
 	@Autowired
@@ -45,10 +49,14 @@ public class ChatService {
 				params.put(Constants.EASEMOB_GRANT_TYPE, easemob.getGrantType());
 				params.put(Constants.EASEMOB_CLIENT_ID, easemob.getClientId());
 				params.put(Constants.EASEMOB_CLIENT_SECRET, easemob.getClientSecret());
-				String result = RestTemplateUtil.sendhttp(accessUrl, params, null, null);
+				String body = JacksonUtil.deserializer(params);
+				Map<String,String> headers = Maps.newHashMap();
+				headers.put("content-type", MediaType.APPLICATION_JSON_VALUE);
+				headers.put("Acccept", MediaType.APPLICATION_JSON_VALUE);
+				String result = RestTemplateUtil.sendJson(accessUrl, body, headers, null);
 				if(PublicUtil.isNotEmpty(result)) {
 					EasemobToken token = JacksonUtil.parseJson(result, EasemobToken.class);
-					redisService.set(Constants.EASEMOB_TOKEN, result, token.getExpiresIn() / 2);
+					redisService.sSetAndTime(Constants.EASEMOB_TOKEN, token.getExpiresIn() / 2,result);
 					return token;
 				}
 				logger.error("Try to get token but failed， return null");
