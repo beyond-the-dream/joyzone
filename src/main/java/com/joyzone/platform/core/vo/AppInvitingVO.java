@@ -15,6 +15,9 @@ import java.util.Date;
 @ApiModel("App输出数据信息VO")
 public class AppInvitingVO {
 
+    @ApiModelProperty("邀约ID")
+    private Long invitingId;
+
     @ApiModelProperty("用户ID")
     private Long userId;
 
@@ -23,6 +26,9 @@ public class AppInvitingVO {
 
     @ApiModelProperty("用户头像")
     private String headPic;
+
+    @ApiModelProperty("用户年龄")
+    private Integer userAge;
 
     @ApiModelProperty("地址")
     private String address;
@@ -36,6 +42,9 @@ public class AppInvitingVO {
 
     @ApiModelProperty("支付类型名称")
     private String payWayName;
+
+    @ApiModelProperty("邀约类型")
+    private String inviteType;
 
     public String getUserName() {
         return userName;
@@ -91,5 +100,29 @@ public class AppInvitingVO {
 
     public void setPayWayName(String payWayName) {
         this.payWayName = payWayName;
+    }
+
+    public String getInviteType() {
+        return inviteType;
+    }
+
+    public void setInviteType(String inviteType) {
+        this.inviteType = inviteType;
+    }
+
+    public Long getInvitingId() {
+        return invitingId;
+    }
+
+    public void setInvitingId(Long invitingId) {
+        this.invitingId = invitingId;
+    }
+
+    public Integer getUserAge() {
+        return userAge;
+    }
+
+    public void setUserAge(Integer userAge) {
+        this.userAge = userAge;
     }
 }

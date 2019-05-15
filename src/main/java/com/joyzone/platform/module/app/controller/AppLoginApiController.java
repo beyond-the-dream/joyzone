@@ -52,7 +52,6 @@ public class AppLoginApiController {
         Map map = new HashMap();
         int mobile_code = (int) ((Math.random() * 9 + 1) * 100000);
         String content = "您的验证码是：" + mobile_code + "。请不要把验证码泄露给其他人。";
-
         if (isMobileNO(phone)) {
             //判断手机号是否属于黑名单
             PhoneBlackModel phoneBlack = phoneBlackService.isBlack(phone);
@@ -61,21 +60,21 @@ public class AppLoginApiController {
                 map.put("identify", null);
                 return R.error("此电话号码已因不当言行被拉入黑名单!");
             }
+
 //            Map<String, Object> map1 = Sendsms.sendMS(content, phone);
-            Map<String, Object> map1 = null;
+
+            /*Map<String, Object> map1 = null;
             if (map1 != null && map1.get("code").equals("2")) {
                 boolean flag = redisService.set("mobile_code",String.valueOf(mobile_code),300);
                 if(flag == false){
                     return R.error("缓存手机验证码失败!");
-                }
+                }*/
                 map.put("type", 0);
-                map.put("identify", mobile_code);
-                com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
-                jsonObject.put("data", map);
-                return R.ok(jsonObject.toJSONString());
-            } else {
+                map.put("mobileCode", mobile_code);
+                return R.ok(map);
+           /* } else {
                 return R.error("发送验证码失败！");
-            }
+            }*/
         } else {
             return R.error("手机号格式不正确!");
         }
@@ -98,24 +97,28 @@ public class AppLoginApiController {
      * 用户注册
      **/
     @PostMapping(value = "/userRegister")
-    @ApiOperation(value = "用户注册 @zhangyu")
+    @ApiOperation(value = "用户注册或登录 @zhangyu")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "用户手机号", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "nickName", value = "用户昵称", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "sex", value = "用户性别", required = true, dataType = "Integer", paramType = "query")
+            @ApiImplicitParam(name = "mobileCode", value = "验证码", required = true, dataType = "String", paramType = "query")
     })
-    public R userRegister(@RequestParam("phone") String phone,@RequestParam("nickName") String nickName,@RequestParam("sex") Integer sex) {
-        if (StringUtil.isEmpty(phone) || StringUtil.isEmpty(nickName) || sex == null) {
+    public R userRegister(@RequestParam("phone") String phone,@RequestParam("mobileCode") String mobileCode) {
+        if (StringUtil.isEmpty(phone) || StringUtil.isEmpty(mobileCode)) {
             return R.error("参数有误！");
         }
+        /*String mobileCodeRedis = redisService.get("mobile_code");
+        if("".equals(mobileCodeRedis) || mobileCodeRedis == null){
+            return R.error("验证码过期！");
+        }
+        if(!mobileCodeRedis.equals(mobileCode)){
+            return R.error("验证码有误！");
+        }*/
         List<UserModel> userModelList = userSerivce.getUserByPhone(phone);
         if(userModelList.size() > 0){
-            return R.error("该手机号已注册！");
+            return R.ok("该手机号已注册！");
         }
         UserModel userModel = new UserModel();
         userModel.setPhone(phone);
-        userModel.setUserName(nickName);
-        userModel.setSex(sex);
         userModel.setType(0);  //0:用户
         userModel.setStatus(0);   //用户状态: 0 激活 ， 1 封号， 2禁入
         int ret = userSerivce.save(userModel);

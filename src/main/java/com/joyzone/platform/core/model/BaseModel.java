@@ -19,6 +19,7 @@ public class BaseModel implements Serializable {
     public static final int PAGE_SIZE = 10;//条数
     public static final int STATUS_SUCCESS = 1; //正常
     public static final int STATUS_FAILL = 0;   //失效
+    public static final int PAGE_SIZE_SIX = 6;   //默认
 
     @Transient
     @ApiModelProperty("页数")
@@ -29,7 +30,7 @@ public class BaseModel implements Serializable {
     private Integer pageSize;
 
     public Integer getPageNum() {
-        return pageNum == null ? 1 : pageNum;
+        return pageNum == null ? PAGE_NUM : pageNum;
     }
 
     public void setPageNum(Integer pageNum) {
@@ -37,7 +38,7 @@ public class BaseModel implements Serializable {
     }
 
     public Integer getPageSize() {
-        return pageSize == null ? 10 : pageSize;
+        return pageSize == null ? PAGE_SIZE : pageSize;
     }
 
     public void setPageSize(Integer pageSize) {

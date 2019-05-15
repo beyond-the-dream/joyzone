@@ -1,11 +1,17 @@
 package com.joyzone.platform.module.admin.controller;
 
+import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
+
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import com.github.pagehelper.Page;
+import com.joyzone.platform.common.utils.Constants;
+import com.joyzone.platform.core.model.UserModel;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.joyzone.platform.common.utils.PublicUtil;
 import com.joyzone.platform.common.utils.R;
 import com.joyzone.platform.core.model.ShopModel;
@@ -15,6 +21,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/shop")
@@ -31,10 +39,7 @@ public class ShopController {
 			@ApiImplicitParam(name="phone", value="商户联系电话", required=true,paramType="form"),
 			@ApiImplicitParam(name="address", value="商户地址", required=true,paramType="form"),
 			@ApiImplicitParam(name="description", value="商户描述", required=true, paramType="form"),
-			@ApiImplicitParam(name="type", value="商户类型:0:组队店家;1:体验券店家", required=true, paramType="form"),
 			@ApiImplicitParam(name="price", value="组队店家", paramType="form"),
-			@ApiImplicitParam(name="priceTaste", value="体验价格", required=true, paramType="form"),
-			@ApiImplicitParam(name="shopKind", value="店家提供的活动类型", required=true, paramType="form"),
 			@ApiImplicitParam(name="regImg", value="工商注册照片", required=false, paramType="form"),
 			@ApiImplicitParam(name="legalPersonImg", value="法人信息照片", required=false, paramType="form")
 	})
@@ -61,8 +66,66 @@ public class ShopController {
 	@PostMapping("/list")
 	public R listShops(ShopModel shop) {
 		List<ShopModel> shops = shopService.listShops(shop);
-		if(PublicUtil.isEmpty(shops)) return R.error("没有门店数据");
-		return R.ok(shops);
+		if(shops != null && shops.size() > 0){
+			Page page = new Page();
+			page = (Page)shops;
+			return R.pageToData(page.getTotal(),page.getResult());
+		}
+		return R.pageToData(0L,shops);
+	}
+
+
+	@PostMapping("saveLngOrLat")
+	@ApiOperation("测试使用（添加门店经纬度到缓存中取）")
+	public R saveLngOrLat(ShopModel shop){
+		if(shop != null && shop.getLng() != null){
+			shopService.saveLngOrLat(shop);
+		}else{
+			List<ShopModel> list = shopService.findAll();
+			if(list != null && list.size() > 0){
+				for(ShopModel shopModel : list){
+					shopService.saveLngOrLat(shopModel);
+				}
+			}
+		}
+		return R.ok("保存成功");
+	}
+
+	/**
+	 * 用于新增系统用户时选择商家信息
+	 * @param name
+	 * @param pageNum
+	 * @param pageSize
+	 * @return
+	 */
+	@GetMapping("getShopMapList")
+	@ApiOperation("用于新增系统用户时选择商家信息")
+	@ApiImplicitParams(value= {
+			@ApiImplicitParam(name="name", value="商户名字", paramType="query"),
+			@ApiImplicitParam(name="pageNum", value="页数", paramType="query",defaultValue = "1"),
+			@ApiImplicitParam(name="pageSize", value="每页条数", paramType="query",defaultValue = "10"),
+	})
+	public R getShopMapList(String name,Integer pageNum,Integer pageSize){
+		List<Map<String,Object>> list = shopService.getShopMapList(name,pageNum,pageSize);
+		if(list != null && list.size() > 0){
+			Page page = new Page();
+			page = (Page)list;
+			return R.pageToData(page.getTotal(),page.getResult());
+		}
+		return R.pageToData(0L,list);
+	}
+
+	@GetMapping("/exportShopXls")
+	@ApiOperation("店家清单导出  @Mr.Gx")
+	public void exportShopXls(ShopModel  shopModel, HttpServletResponse response) throws Exception{
+		response.setHeader("content-Type", "application/vnd.ms-excel");
+		response.setHeader("Content-Disposition",
+				"attachment;filename=" + URLEncoder.encode(Constants.SYS_SHOP, "UTF-8") + ".xls");
+		response.setCharacterEncoding("UTF-8");
+		List<ShopModel> list = shopService.getExportShopXls(shopModel);;
+		ExportParams params = new ExportParams(Constants.SYS_SHOP, Constants.SYS_SHOP);
+		Workbook workbook = ExcelExportUtil.exportExcel(params, ShopModel.class, list);
+		workbook.write(response.getOutputStream());
 	}
 
 }

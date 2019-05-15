@@ -83,19 +83,27 @@ public class ShopCouponModel extends BaseModel{
     private Integer status;
 
     /**
+     * 状态：0 失效 1 正常
+     */
+    @Excel(name="结果",replace= {"组队中_0","组队成功_1","组队失败_2"})
+    @ApiModelProperty("结果：0：组队中；1：组队成功；2：组队失败")
+    private Integer result;
+
+    /**
      * 开始时间
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Column(name = "start_time")
     @Excel(name="体验时间",exportFormat = "yyyy-MM-dd HH:mm:ss")
-    @ApiModelProperty("开始时间")
+    @ApiModelProperty("开始时间 yyyy-MM-dd HH:mm:ss")
     private Date startTime;
 
     @Column(name = "end_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @ApiModelProperty("结束时间")
+    @ApiModelProperty("结束时间 yyyy-MM-dd HH:mm:ss")
+    @Excel(name="结束时间",exportFormat = "yyyy-MM-dd HH:mm:ss")
     private Date endTime;
 
     /**
@@ -113,6 +121,7 @@ public class ShopCouponModel extends BaseModel{
     @Column(name = "update_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @Excel(name="更新时间",exportFormat = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**
@@ -219,6 +228,14 @@ public class ShopCouponModel extends BaseModel{
      */
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getResult() {
+        return result;
+    }
+
+    public void setResult(Integer result) {
+        this.result = result;
     }
 
     /**
