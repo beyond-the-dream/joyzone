@@ -4,9 +4,12 @@ import com.github.pagehelper.util.StringUtil;
 import com.joyzone.platform.common.utils.R;
 import com.joyzone.platform.core.model.PhoneBlackModel;
 import com.joyzone.platform.core.model.UserModel;
+import com.joyzone.platform.core.service.ChatService;
 import com.joyzone.platform.core.service.PhoneBlackService;
 import com.joyzone.platform.core.service.RedisService;
 import com.joyzone.platform.core.service.UserSerivce;
+
+import cn.hutool.crypto.digest.DigestUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +39,9 @@ public class AppLoginApiController {
     private RedisService redisService;
     @Autowired
     private UserSerivce userSerivce;
+    
+    @Autowired
+    private ChatService chatService;
 
     /**
      * zy
@@ -71,7 +78,7 @@ public class AppLoginApiController {
                 }*/
                 map.put("type", 0);
                 map.put("mobileCode", mobile_code);
-                return R.ok(map);
+                return R.ok((Object)map);
            /* } else {
                 return R.error("发送验证码失败！");
             }*/
@@ -103,6 +110,7 @@ public class AppLoginApiController {
             @ApiImplicitParam(name = "mobileCode", value = "验证码", required = true, dataType = "String", paramType = "query")
     })
     public R userRegister(@RequestParam("phone") String phone,@RequestParam("mobileCode") String mobileCode) {
+        Map map = new HashMap();
         if (StringUtil.isEmpty(phone) || StringUtil.isEmpty(mobileCode)) {
             return R.error("参数有误！");
         }
@@ -115,17 +123,26 @@ public class AppLoginApiController {
         }*/
         List<UserModel> userModelList = userSerivce.getUserByPhone(phone);
         if(userModelList.size() > 0){
-            return R.ok("该手机号已注册！");
+            Long userId = userModelList.get(0).getId();
+            map.put("message","该手机号已注册！");
+            map.put("userId",userId);
+            return R.ok((Object)map);
         }
         UserModel userModel = new UserModel();
         userModel.setPhone(phone);
         userModel.setType(0);  //0:用户
         userModel.setStatus(0);   //用户状态: 0 激活 ， 1 封号， 2禁入
-        int ret = userSerivce.save(userModel);
+        userModel.setCreateTime(new Date());
+        int ret = userSerivce.saveUser(userModel);
         if(ret == 0){
             return R.error("用户注册失败！");
         }
-        return R.ok("用户注册成功！");
+        String chatPwd = DigestUtil.md5Hex(userModel.getId().toString());
+        chatService.registerUser(userModel.getId().toString(), chatPwd);
+        List<UserModel> userModels = userSerivce.getUserByPhone(phone);
+        map.put("message","注册成功！");
+        map.put("userId",userModels.get(0).getId());
+        return R.ok((Object)map);
     }
 
 
