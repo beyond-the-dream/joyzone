@@ -107,6 +107,12 @@ public class ChatService {
 		return null;
 	}
 	
+	/**
+	 * Change pwd
+	 * @param userName
+	 * @param newPwd
+	 * @return
+	 */
 	public boolean changePwd(String userName, String newPwd) {
 		String pwdUrl = easemob.getPwdUrl();
 		pwdUrl = pwdUrl.replace("{userName}", userName);
