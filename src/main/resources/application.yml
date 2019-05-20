@@ -68,7 +68,7 @@ using:
     schedulerFactory: false
 fileSize: 2048000
 scale: 0.8
-distance_range: 1
+distance_range: 5000
 tencent:
   oss:
     secretId: AKIDDJF0rh6KckRDjCnpyeeVBkYQNGMIDg9J

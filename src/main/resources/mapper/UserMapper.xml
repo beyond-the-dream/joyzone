@@ -36,6 +36,13 @@
       SELECT * FROM user
       WHERE phone = #{phone}
   </select>
+
+  <delete id="delUsers">
+    delete from user where id in
+    <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+        #{id}
+    </foreach>
+  </delete>
   
   <insert id="saveUser" useGeneratedKeys="true" keyColumn="id" keyProperty="id" parameterType="UserModel" >
   insert into user(user_name, login_name,password,type,phone,head_pic,profession,education,age,sex,birthday,status,create_time,update_time)
