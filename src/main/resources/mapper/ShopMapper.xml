@@ -37,6 +37,10 @@
                     fetchType="lazy" ofType="com.joyzone.platform.core.dto.ShopHomeTypeDto">
 
         </collection>
+        <collection property="shopHomeHotDtoList" javaType="ArrayList" column="{userId=userId}" select="com.joyzone.platform.core.mapper.ShopMapper.queryShopHomeHotDtoList"
+                    fetchType="lazy" ofType="com.joyzone.platform.core.dto.ShopHomeHotDto">
+
+        </collection>
         <collection property="shopHomeListDtoList" javaType="ArrayList" column="{userId=userId}" select="com.joyzone.platform.core.mapper.ShopMapper.queryShopHomeListDtoList"
                     fetchType="lazy" ofType="com.joyzone.platform.core.dto.ShopHomeListDto">
 
@@ -50,10 +54,13 @@
     <resultMap id="shopHomeTypeDtoMap" type="com.joyzone.platform.core.dto.ShopHomeTypeDto">
         <id column="shopTypeId" property="shopTypeId" jdbcType="BIGINT" />
         <result column="shopTypeName" property="shopTypeName" jdbcType="VARCHAR" />
+        <result column="typeImage" property="typeImage" jdbcType="VARCHAR" />
+        <result column="sort" property="sort" jdbcType="INTEGER" />
     </resultMap>
     <resultMap id="shopHomeListDtoMap" type="com.joyzone.platform.core.dto.ShopHomeListDto">
         <id column="shopTypeId" property="shopTypeId" jdbcType="BIGINT" />
         <result column="shopTypeName" property="shopTypeName" jdbcType="VARCHAR" />
+        <result column="sort" property="sort" jdbcType="INTEGER" />
         <collection property="shopHomeCoverList" javaType="ArrayList" column="{shopTypeId=shopTypeId}" select="com.joyzone.platform.core.mapper.ShopMapper.queryShopHomeCoverList"
                     fetchType="lazy" ofType="com.joyzone.platform.core.dto.ShopHomeListCoverDto">
 
@@ -62,6 +69,39 @@
     <resultMap id="shopHomeCoverMap" type="com.joyzone.platform.core.dto.ShopHomeListCoverDto">
         <id column="shopId" property="shopId" jdbcType="BIGINT" />
         <result column="shopCover" property="shopCover" jdbcType="VARCHAR" />
+    </resultMap>
+    <resultMap id="shopHomeHotDtoMap" type="com.joyzone.platform.core.dto.ShopHomeHotDto">
+        <id column="shopId" property="shopId" jdbcType="BIGINT" />
+        <result column="shopCover" property="shopCover" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <resultMap id="shopInfoDto" type="com.joyzone.platform.core.dto.ShopInfoDto" >
+        <id column="shopId" property="shopId" jdbcType="BIGINT" />
+        <result column="shopName" property="shopName" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="price" property="price" jdbcType="DECIMAL" />
+        <result column="coverImg" property="coverImg" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="regImg" property="regImg" jdbcType="VARCHAR" />
+        <result column="legalPersonImg" property="legalPersonImg" jdbcType="VARCHAR" />
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="lng" property="lng" jdbcType="DECIMAL"/>
+        <result column="lat" property="lat" jdbcType="DECIMAL"/>
+        <result column="province" property="province" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="area" property="area" jdbcType="VARCHAR"/>
+        <result column="shopTypeId" property="shopTypeId" jdbcType="BIGINT"/>
+        <result column="shopTypeName" property="shopTypeName" jdbcType="VARCHAR"/>
+        <result column="shopCollectStatus" property="shopCollectStatus" jdbcType="INTEGER" />
+        <collection property="shopTeamsDtoList" javaType="ArrayList" column="{shopId=shopId}" select="com.joyzone.platform.core.mapper.TeamMapper.getShopTeamListByShopId"
+                    fetchType="lazy" ofType="com.joyzone.platform.core.dto.ShopTeamsDto">
+        </collection>
+        <collection property="coverImgList" javaType="ArrayList" column="{shopId=shopId}" select="com.joyzone.platform.core.mapper.ShopMapper.getShopCoverListByShopId"
+                    fetchType="lazy" ofType="java.lang.String">
+        </collection>
     </resultMap>
 
   <insert id="addShop" parameterType="com.joyzone.platform.core.model.ShopModel" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
@@ -156,6 +196,33 @@
       select * from shop where id = #{id}
   </select>
 
+    <select id="findShopInfoDtoByShopId" resultMap="shopInfoDto">
+        select id as shopId,
+        name as shopName,
+        phone,
+        address,
+        description,
+        price,
+        cover_img as coverImg,
+        status,
+        reg_img as regImg,
+        legal_person_img as legalPersonImg,
+        create_time as createTime,
+        update_time as updateTime,
+        lng,
+        lat,
+        province,
+        city,
+        area,
+        shop_type_id as shopTypeId,
+        shop_type_name as shopTypeName,
+        (
+	        SELECT status FROM shop_collect WHERE user_id = #{userId} AND shop_id = #{shopId}
+        ) AS shopCollectStatus
+        from shop
+        where id = #{shopId}
+    </select>
+
   <select id="findAll" resultMap="BaseResultMap">
       select * from shop
   </select>
@@ -191,18 +258,30 @@
     <select id="queryShopHomeTypeDtoList" resultMap="shopHomeTypeDtoMap">
         SELECT
             id AS shopTypeId,
-            NAME AS shopTypeName
+            name AS shopTypeName,
+            type_image as typeImage,
+            (id-1) AS sort
         FROM shop_type
-        WHERE STATUS = 1 AND TYPE = 1 LIMIT 5
+        WHERE status = 1 AND type = 0
+        ORDER BY sort
+        LIMIT 8
+    </select>
+
+    <select id="queryShopHomeHotDtoList" resultMap="shopHomeHotDtoMap">
+        SELECT
+         id AS shopId,
+         cover_img AS shopCover
+         FROM shop WHERE id IN (24,29,38,42)
     </select>
 
     <select id="queryShopHomeListDtoList" resultMap="shopHomeListDtoMap">
           SELECT
               st.id AS shopTypeId,
-              st.name AS shopTypeName
+              st.name AS shopTypeName,
+              (st.id-1) AS sort
          FROM shop s
          LEFT JOIN shop_type st ON st.id = s.`shop_type_id`
-         WHERE st.type = 1
+         WHERE st.type = 0
          GROUP BY st.id
     </select>
 
@@ -227,6 +306,23 @@
         <if test="name != null and name != ''">
             and name like concat('%',#{name},'%')
         </if>
+    </select>
+
+    <select id="listShops" resultMap="BaseResultMap" parameterType="com.joyzone.platform.core.model.ShopModel">
+        select * from shop where 1=1
+        <if test="name != null and name != ''">
+            and name like concat('%',#{name},'%')
+        </if>
+        <if test="startTime != null">
+            and create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            and create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+    </select>
+
+    <select id="getShopCoverListByShopId" resultType="java.lang.String">
+        SELECT File_path FROM document WHERE OWNER = #{shopId} AND file_name = 'shopImg' AND TYPE = 0
     </select>
 
 </mapper>

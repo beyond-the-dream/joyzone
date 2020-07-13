@@ -2,6 +2,7 @@ package com.joyzone.platform.core.model;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.joyzone.platform.common.utils.DateUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,14 +23,6 @@ public class InvitingModel extends BaseModel{
 
     @ApiModelProperty("发起人")
     private Long owner;
-
-    @Column(name = "shop_id")
-    @ApiModelProperty("店家ID")
-    private Long shopId;
-
-    @Column(name = "shop_name")
-    @ApiModelProperty("店家名称")
-    private String shopName;
 
     /**
      * 地址
@@ -82,30 +75,37 @@ public class InvitingModel extends BaseModel{
      * 开始时间
      */
     @Column(name = "start_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Excel(name="体验时间",exportFormat = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
+    @Excel(name="体验时间",exportFormat = "yyyy-MM-dd HH")
     private Date startTime;
+
+    /**
+     * 参加人数限制
+     */
+    @Excel(name="限制人数")
+    @ApiModelProperty("限制人数")
+    private Integer number;
 
     /**
      * 邀约创建时间
      */
     @Column(name = "create_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Excel(name="创建时间",exportFormat = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
+    @Excel(name="创建时间",exportFormat = "yyyy-MM-dd HH")
     private Date createTime;
 
     /**
      * 邀约修改时间
      */
     @Column(name = "update_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     private Date updateTime;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     @Transient
     private Date endTime;
 
@@ -116,6 +116,10 @@ public class InvitingModel extends BaseModel{
     @Column(name = "sex_want")
     @Excel(name="希望邀约对象性别：",replace = {"女_0","男_1","随便_2"})
     private Integer sexWant;
+
+    @ApiModelProperty("个人邀请时自动创建聊天群")
+    @Column(name = "chat_group_id")
+    private String chatGroupId;
 
     /**
      * @return id
@@ -145,19 +149,6 @@ public class InvitingModel extends BaseModel{
         this.owner = owner;
     }
 
-    /**
-     * @return shop_id
-     */
-    public Long getShopId() {
-        return shopId;
-    }
-
-    /**
-     * @param shopId
-     */
-    public void setShopId(Long shopId) {
-        this.shopId = shopId;
-    }
 
     /**
      * 获取地址
@@ -229,6 +220,14 @@ public class InvitingModel extends BaseModel{
      */
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
     /**
@@ -321,14 +320,6 @@ public class InvitingModel extends BaseModel{
         this.payWay = payWay;
     }
 
-    public String getShopName() {
-        return shopName;
-    }
-
-    public void setShopName(String shopName) {
-        this.shopName = shopName;
-    }
-
     public Integer getInvitingNum() {
         return invitingNum;
     }
@@ -351,5 +342,13 @@ public class InvitingModel extends BaseModel{
 
     public void setSexWant(Integer sexWant) {
         this.sexWant = sexWant;
+    }
+
+    public String getChatGroupId() {
+        return chatGroupId;
+    }
+
+    public void setChatGroupId(String chatGroupId) {
+        this.chatGroupId = chatGroupId;
     }
 }

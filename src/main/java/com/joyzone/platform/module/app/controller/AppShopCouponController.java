@@ -5,11 +5,16 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.joyzone.platform.common.utils.R;
 import com.joyzone.platform.core.dto.CouponDto;
+import com.joyzone.platform.core.dto.CouponRuleDto;
+import com.joyzone.platform.core.dto.TeamRuleDto;
 import com.joyzone.platform.core.model.CouponUserModel;
 import com.joyzone.platform.core.model.ShopCouponModel;
 import com.joyzone.platform.core.model.TeamModel;
+import com.joyzone.platform.core.model.UserModel;
 import com.joyzone.platform.core.service.CouponUserService;
+import com.joyzone.platform.core.service.GroupService;
 import com.joyzone.platform.core.service.ShopCouponService;
+import com.joyzone.platform.core.service.UserSerivce;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -25,7 +30,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/app_shopcoupon")
-@Api(tags = "app商家体验券相关接口",description = "AppShopCouponController")
+@Api(tags = "废弃：app商家体验券相关接口",description = "AppShopCouponController")
 public class AppShopCouponController {
 
     @Autowired
@@ -34,19 +39,25 @@ public class AppShopCouponController {
     private CouponUserService couponUserService;
     @Autowired
     private ShopCouponService couponService;
+    @Autowired
+    private UserSerivce userSerivce;
 
 
+    @Autowired
+    private GroupService groupService;
+    
     /**
      * zy
      */
     @PostMapping("/getCouponList")
     @ApiOperation("前端获取体验券列表 @zhangyu")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "用户ID", required = true, dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "sort", value = "0:热点 1：最新", required = true, dataType = "Integer", paramType = "query")
     })
-    public R getCouponList(ShopCouponModel shopCouponModel, Integer sort){
+    public R getCouponList(ShopCouponModel shopCouponModel,Long userId, Integer sort){
         PageHelper.startPage(0,10);
-        List<CouponDto> couponDtoList = shopCouponService.getCouponList(shopCouponModel,sort);
+        List<CouponDto> couponDtoList = shopCouponService.getCouponList(shopCouponModel,userId,sort);
         if(couponDtoList != null && couponDtoList.size() > 0){
             Page page = new Page();
             page = (Page)couponDtoList;
@@ -77,6 +88,10 @@ public class AppShopCouponController {
             @ApiImplicitParam(name = "couponId", value = "体验券ID", required = true, dataType = "Long", paramType = "query")
     })
     public R joinTheCoupon(CouponUserModel model, Long userId, Long couponId){
+        UserModel userModel = userSerivce.selectByKey(userId);
+        if(userModel ==null || userModel.getSex() == null || userModel.getUserName() == null || userModel.getBirthday() == null){
+            return R.error(100,"请完善个人必要信息：昵称/性别/生日");
+        }
         CouponUserModel couponUserModel = couponUserService.checkUserInCoupon(model,userId,couponId);
         if(couponUserModel != null && couponUserModel.getStatus() == 0){
             return R.error("用户已领取该体验券！");
@@ -99,6 +114,7 @@ public class AppShopCouponController {
         bean.setCreateTime(new Date());
         int ret = couponUserService.save(bean);
         checkCouponIfSuccess(couponId);
+        groupService.joinCouponGroup(couponId, userId);
         if(ret == 1){
             return R.ok("用户领取成功！");
         }else {
@@ -117,6 +133,20 @@ public class AppShopCouponController {
             model.setUpdateTime(new Date());
             couponService.update(model);
         }
+    }
+
+    @PostMapping("/getCouponRuleInfo")
+    @ApiOperation("首页组队列表点击规则后的页面 @zhangyu")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "couponId", value = "体验券id", required = true, dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Long", paramType = "query")
+    })
+    public R getCouponRuleInfo(Long couponId,Long userId){
+        CouponRuleDto couponRuleDto = couponService.getCouponRuleInfo(couponId,userId);
+        if(couponRuleDto == null){
+            return R.error("没有数据！");
+        }
+        return R.ok(couponRuleDto);
     }
 
 }

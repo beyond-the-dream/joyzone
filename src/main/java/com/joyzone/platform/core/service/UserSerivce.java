@@ -1,13 +1,18 @@
 package com.joyzone.platform.core.service;
 
-import com.joyzone.platform.common.utils.R;
 import com.joyzone.platform.common.utils.RedisColumn;
 import com.joyzone.platform.common.utils.RedisGeoUtil;
 import com.joyzone.platform.core.base.BaseService;
 import com.joyzone.platform.core.mapper.UserMapper;
 import com.joyzone.platform.core.model.UserModel;
+
+import cn.hutool.crypto.digest.DigestUtil;
+import io.jsonwebtoken.lang.Collections;
+import tk.mybatis.mapper.entity.Example;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Point;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +31,12 @@ public class UserSerivce extends BaseService<UserModel> {
 
     @Autowired
     private UserMapper userMapper;
+    
     @Autowired
     private RedisService redisService;
+    
+    @Autowired
+    private ChatService chatService;
 
     /**
      * 后台用户管理清单
@@ -45,9 +54,17 @@ public class UserSerivce extends BaseService<UserModel> {
      */
     public int saveUser(UserModel userModel){
         Date date = new Date();
+        if(userModel.getId() != null){
+            userModel.setUpdateTime(date);
+            int i = userMapper.updateByPrimaryKeySelective(userModel);
+            if(i > 0) {
+            	chatService.updateUser(""+userModel.getId(), userModel.getUserName());
+            }
+            return i;
+        }
         userModel.setCreateTime(date);
         userModel.setUpdateTime(date);
-        return userMapper.insertSelective(userModel);
+        return userMapper.saveUser(userModel);
     }
 
     /**
@@ -55,7 +72,7 @@ public class UserSerivce extends BaseService<UserModel> {
      * @param userModel
      * Mr.Gx
      */
-    public List<UserModel> getUserByPhone(String phone){
+    public UserModel getUserByPhone(String phone){
         return userMapper.getUserByPhone(phone);
     }
 
@@ -84,4 +101,31 @@ public class UserSerivce extends BaseService<UserModel> {
     public List<UserModel> getExportUserXls(UserModel userModel){
         return userMapper.getUserList(userModel);
     }
+
+
+    /**
+     * 根据条件获取用户信息
+     * @param userId
+     * Mr.Gx
+     */
+    public UserModel getUserInfo(Long userId){
+        return userMapper.getUserInfo(userId);
+    }
+    
+    public Integer updateChatMD5(Long userId, String md5) {
+    	return userMapper.updateChatMD5(userId, md5);
+    }
+    
+    public void updateMD5() {
+    	Example example = new Example(UserModel.class);
+    	example.createCriteria().andIsNull("chatIdMd5");
+    	List<UserModel> users = selectByExample(example);
+    	if(!Collections.isEmpty(users)) {
+    		for(UserModel user : users) {
+    			String md5 = DigestUtil.md5Hex(user.getId().toString());
+    			updateChatMD5(user.getId(), md5);
+    		}
+    	}
+    }
+
 }

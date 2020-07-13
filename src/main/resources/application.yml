@@ -53,7 +53,7 @@ pagehelper:
   support-methods-arguments: true
   params: count:countSql
 druid:
-  url: jdbc:mysql://120.78.156.35:3306/joyzone?autoReconnect=true&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+  url: jdbc:mysql://120.78.156.35:3306/joyzoneProd?autoReconnect=true&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
   driver-class: com.mysql.jdbc.Driver
   username: root
   password: Joyzone@hgz
@@ -61,15 +61,40 @@ druid:
   min-idle: 1
   max-active: 20
   test-on-borrow: true
+  testConnectionOnCheckout: false
+  testConnectionOnCheckin : true
+  idleConnectionTestPeriod : 90
 logging:
   config: classpath:logback.xml
 using:
   spring:
     schedulerFactory: false
-secretId: AKIDDJF0rh6KckRDjCnpyeeVBkYQNGMIDg9J
-secretKey:  1IRmyGn3FWlvukPSXKAQFy3vgF05rUwk
-bucket:  joyzone-1257127706
+  quartz:
+    schedulerFactory: true
 fileSize: 2048000
 scale: 0.8
-
 distance_range: 5000
+tencent:
+  oss:
+    secretId: AKIDDJF0rh6KckRDjCnpyeeVBkYQNGMIDg9J
+    secretKey:  1IRmyGn3FWlvukPSXKAQFy3vgF05rUwk
+    bucket:  joyzone-1257127706
+ali:
+  oss:
+    secretId: LTAI4FhPLUnfs3buVqXJxe86
+    secretKey: YpWzyGQsJOEeqrVSiLkOVEnRNgbBgi
+    bucket: 9da
+    domain: oss-cn-shenzhen.aliyuncs.com
+  sms:
+    codeTemplateCode: SMS_173348940
+    signName: 九达缘起
+yunpian:  
+  sms:
+    apiKey: 129afa0712a781de56500b720e5f2c6e
+easemob:
+   host: http://a1.easemob.com/
+   orgName: 1113190505010089
+   appName: joyzone
+   grantType: client_credentials
+   clientId: YXA6eWR-kG9AEemCpmWWikCXLA
+   clientSecret: YXA6XYMzIlVp-y-0BcbYbuxQC1nbDCg

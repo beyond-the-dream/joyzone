@@ -1,11 +1,13 @@
 package com.joyzone.platform.core.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.joyzone.platform.common.utils.DateUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 import javax.persistence.*;
 
 @Table(name = "sys_user")
@@ -41,14 +43,24 @@ public class SysUserModel  extends BaseModel{
     private String password;
 
     @Column(name = "create_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     private Date createTime;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     @Column(name = "update_time")
     private Date updateTime;
+
+    @Transient
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @ApiModelProperty("开始时间 yyyy-MM-dd HH:mm:ss")
+    private Date startTime;
+
+    @Transient
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @ApiModelProperty("结束时间 yyyy-MM-dd HH:mm:ss")
+    private Date endTime;
 
     /**
      * 用户状态；0：激活，1：禁用
@@ -67,9 +79,9 @@ public class SysUserModel  extends BaseModel{
      * 上次登陆时间
      */
     @ApiModelProperty("上次登陆时间 yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     @Column(name = "last_login_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date lastLoginTime;
 
     /**
@@ -78,6 +90,17 @@ public class SysUserModel  extends BaseModel{
     @ApiModelProperty("登陆出错次数")
     @Column(name = "try_err_times")
 	private Integer tryErrTimes;
+
+    @Transient
+    private List<SysRoleModel> userRoles;
+
+    public List<SysRoleModel> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(List<SysRoleModel> userRoles) {
+        this.userRoles = userRoles;
+    }
 
     /**
      * @return id
@@ -254,4 +277,20 @@ public class SysUserModel  extends BaseModel{
 	public void setTryErrTimes(Integer tryErrTimes) {
 		this.tryErrTimes = tryErrTimes;
 	}
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
 }

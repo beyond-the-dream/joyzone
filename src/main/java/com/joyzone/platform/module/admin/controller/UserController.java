@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @PostMapping("saveUser")
-    @ApiOperation("添加用户信息 @Mr.Gx")
+    @ApiOperation("添加及更新用户信息 @Mr.Gx")
     public R saveUser(UserModel userModel){
         if(userModel == null)
             return R.error("用户信息不能为空.");
@@ -67,13 +67,13 @@ public class UserController {
     }
 
     @PostMapping("delUsers")
-    @ApiOperation("批量删除")
+    @ApiOperation("批量删除 @Mr.Gx")
     public R delUsers(@RequestParam("ids") Long[] ids){
         return userSerivce.delUsers(ids) > 0 ? R.ok() : R.error("删除失败");
     }
 
     @GetMapping("/exportUserXls")
-    @ApiOperation("用户清单导出")
+    @ApiOperation("用户清单导出  @Mr.Gx")
     public void exportUserXls(UserModel userModel,HttpServletResponse response) throws Exception{
         response.setHeader("content-Type", "application/vnd.ms-excel");
         response.setHeader("Content-Disposition",
@@ -83,5 +83,13 @@ public class UserController {
         ExportParams params = new ExportParams(Constants.APP_USER, Constants.APP_USER);
         Workbook workbook = ExcelExportUtil.exportExcel(params, UserModel.class, list);
         workbook.write(response.getOutputStream());
+    }
+    
+    /**
+     * 用于更新用户注册环信时的密码用MD5
+     */
+    @PostMapping("/updateMD5")
+    public void updateMD5() {
+    	userSerivce.updateMD5();
     }
 }

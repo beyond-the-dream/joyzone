@@ -1,6 +1,7 @@
 package com.joyzone.platform.core.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.joyzone.platform.common.utils.DateUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -49,12 +50,22 @@ public class AppForumVO {
     @ApiModelProperty("年龄")
     private Integer age;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @ApiModelProperty("年龄")
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
+    @ApiModelProperty("创建时间")
     private Date createTime;
 
     @ApiModelProperty("跟帖人数")
     private List<AppForumVO> forumDetails;
+
+    private Integer userIsPoint;  //登录用户是否点赞该条评论
+
+    public Integer getUserIsPoint() {
+        return userIsPoint;
+    }
+
+    public void setUserIsPoint(Integer userIsPoint) {
+        this.userIsPoint = userIsPoint;
+    }
 
     public Long getId() {
         return id;

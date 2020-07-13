@@ -37,13 +37,21 @@
     <select id="getAppForumList" resultType="com.joyzone.platform.core.vo.AppForumVO" >
         SELECT
             f.id,f.content,f.type,f.point_num as pointNum,f.create_time as createTime,
-            u.id as userId,u.login_name as userName,u.head_pic as headPic,u.sex,u.education,
-            u.profession,TIMESTAMPDIFF(YEAR,u.birthday,NOW()) AS age
+            u.id as userId,u.user_name as userName,u.head_pic as headPic,u.sex,u.education,
+            u.profession,TIMESTAMPDIFF(YEAR,u.birthday,NOW()) AS age,
+            IF((IFNULL((SELECT id FROM forum_fabulous ff WHERE ff.user_id = #{userId} AND ff.forum_id =f.id),0)=0),0,1) AS userIsPoint
         FROM forum f INNER JOIN `user` u on (f.user_id = u.id and u.`status` = 0)
-        WHERE f.`status` = 1
+        WHERE f.`status` = 1 order by pointNum desc, id desc
     </select>
 
     <update id="updateForumPointNum">
-        update forum set point_num = point_num + 1 where id = #{id}
+        update forum set
+         <if test="type == 1">
+             point_num = point_num + 1
+         </if>
+        <if test="type == 2">
+            point_num = point_num - 1
+        </if>
+         where id = #{id}
     </update>
 </mapper>

@@ -1,11 +1,13 @@
 package com.joyzone.platform.core.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.joyzone.platform.core.model.BaseModel;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Transient;
 import java.util.Date;
@@ -22,41 +24,52 @@ public class OrderMineDto extends BaseModel{
     }
 
     //体验券ID
-    @ApiModelProperty("店家组队主键")
-    private Long teamId;
+    @ApiModelProperty("店家组队或个人邀请主键")
+    private Long teamOrInvitingId;
 
     //店家ID
     @ApiModelProperty("店家ID")
     private Long shopId;
 
     //店家图片
-    @ApiModelProperty("店家图片")
-    private String shopImg;
+    @ApiModelProperty("店家或个人图片")
+    private String shopOrUserImg;
 
     //店家名称
-    @ApiModelProperty("店家名称")
-    private String shopName;
+    @ApiModelProperty("店家或个人邀请活动名称")
+    private String shopOrContentName;
 
     //店家地址
-    @ApiModelProperty("店家地址")
-    private String shopAddress;
+    @ApiModelProperty("店家或个人邀请地址")
+    private String address;
 
     //体验活动开始时间
     @ApiModelProperty("店家组队开始时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
 
     //允许的最大人数
     @ApiModelProperty("允许最大人数")
     private Integer personNum;
 
+    @ApiModelProperty("支付方式")
+    private Integer payWay;
+
+    @ApiModelProperty("0：进行中 1：已完成")
+    private Integer orderStatus;
+
+    @ApiModelProperty("0：店家组队订单 1：个人邀请订单")
+    private Integer orderType;
+
     private List<UserJoinTeamDto> userJoinList;
 
-    public Long getTeamId() {
-        return teamId;
+    public Long getTeamOrInvitingId() {
+        return teamOrInvitingId;
     }
 
-    public void setTeamId(Long teamId) {
-        this.teamId = teamId;
+    public void setTeamOrInvitingId(Long teamOrInvitingId) {
+        this.teamOrInvitingId = teamOrInvitingId;
     }
 
     public Long getShopId() {
@@ -67,28 +80,28 @@ public class OrderMineDto extends BaseModel{
         this.shopId = shopId;
     }
 
-    public String getShopImg() {
-        return shopImg;
+    public String getShopOrUserImg() {
+        return shopOrUserImg;
     }
 
-    public void setShopImg(String shopImg) {
-        this.shopImg = shopImg;
+    public void setShopOrUserImg(String shopOrUserImg) {
+        this.shopOrUserImg = shopOrUserImg;
     }
 
-    public String getShopName() {
-        return shopName;
+    public String getShopOrContentName() {
+        return shopOrContentName;
     }
 
-    public void setShopName(String shopName) {
-        this.shopName = shopName;
+    public void setShopOrContentName(String shopOrContentName) {
+        this.shopOrContentName = shopOrContentName;
     }
 
-    public String getShopAddress() {
-        return shopAddress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setShopAddress(String shopAddress) {
-        this.shopAddress = shopAddress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public Date getStartTime() {
@@ -105,6 +118,30 @@ public class OrderMineDto extends BaseModel{
 
     public void setPersonNum(Integer personNum) {
         this.personNum = personNum;
+    }
+
+    public Integer getPayWay() {
+        return payWay;
+    }
+
+    public void setPayWay(Integer payWay) {
+        this.payWay = payWay;
+    }
+
+    public Integer getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(Integer orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public Integer getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(Integer orderType) {
+        this.orderType = orderType;
     }
 
     public List<UserJoinTeamDto> getUserJoinList() {

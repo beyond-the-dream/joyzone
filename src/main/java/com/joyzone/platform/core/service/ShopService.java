@@ -1,13 +1,13 @@
 package com.joyzone.platform.core.service;
 
-import java.math.BigDecimal;
 import java.util.*;
-
 import com.github.pagehelper.Page;
 import com.joyzone.platform.common.utils.*;
 import com.joyzone.platform.core.dto.ShopDto;
 import com.joyzone.platform.core.dto.ShopHomeDto;
+import com.joyzone.platform.core.dto.ShopInfoDto;
 import com.joyzone.platform.core.model.BaseModel;
+import com.joyzone.platform.core.model.DocumentModel;
 import com.joyzone.platform.core.model.ShopTypeModel;
 import com.joyzone.platform.core.vo.AppShopHomeVO;
 import com.joyzone.platform.core.vo.AppShopVO;
@@ -46,6 +46,8 @@ public class ShopService extends BaseService<ShopModel> {
 	private RedisService redisService;
 	@Autowired
 	private ShopTypeService shopTypeService;
+	@Autowired
+	private DocumentService documentService;
 
 	
 	public void validateShop(ShopModel shop) {
@@ -58,20 +60,37 @@ public class ShopService extends BaseService<ShopModel> {
 		if(StringUtil.isEmpty(shop.getProvince())) throw new JZException("请选择店家所在的省份");
 		if(StringUtil.isEmpty(shop.getCity())) throw new JZException("请选择店家所在的市");
 		if(StringUtil.isEmpty(shop.getArea())) throw new JZException("请选择店家所在的地区");
+		if(shop.getPrice() == null) throw new JZException("店家所组队价格不能为空");
 		if(shop.getLng() == null) throw new JZException("请填写店家所在经度");
 		if(shop.getLat() == null) throw new JZException("请填写店家所在经度");
 	}
 	
 	public void addShop(ShopModel shop) {
 		validateShop(shop);
+		String[] coverImgs = shop.getCoverImg().split(",");
 		shop.setStatus(ShopModel.STATUS_SUCCESS); //默认签约
 		shop.setCreateTime(new Date());
+		shop.setCoverImg(coverImgs[0]); //
 		shopMapper.addShop(shop);
-//		Long shopId = shop.getId();
-//		if(shopId != null){
-//			//缓存中保存商家经纬度信息
-//			saveLngOrLat(shop);
-//		}
+		Long shopId = shop.getId();
+		if(shopId != null){
+			if(coverImgs.length > 0){
+				for(String path : coverImgs){
+					DocumentModel model = new DocumentModel();
+					model.setFilePath(path);
+					model.setFileName("shopImg");
+					model.setOwner(shopId);
+					model.setType(false);
+					Date date = new Date();
+					model.setCreateTime(date);
+					model.setUpdateTime(date);
+					documentService.save(model);
+				}
+			}
+
+			//缓存中保存商家经纬度信息
+			//		saveLngOrLat(shop);
+		}
 	}
 	
 	public void updateShop(ShopModel shop) {
@@ -103,7 +122,7 @@ public class ShopService extends BaseService<ShopModel> {
 	}
 	
 	public List<ShopModel> listShops(ShopModel shop){
-		return shopMapper.select(shop);
+		return shopMapper.listShops(shop);
 	}
 	
 	public boolean exists(Long shopId) {
@@ -123,6 +142,10 @@ public class ShopService extends BaseService<ShopModel> {
 	 */
 	public ShopModel findById(Long id){
 		return shopMapper.findById(id);
+	}
+
+	public ShopInfoDto findShopInfoDtoByShopId(Long shopId,Long userId){
+		return shopMapper.findShopInfoDtoByShopId(shopId,userId);
 	}
 
 	/**
@@ -179,7 +202,7 @@ public class ShopService extends BaseService<ShopModel> {
 		return R.ok(appShopHomeVO);
 	}
 
-	public List<ShopHomeDto> getShopHomeList(Long userId){
+	public ShopHomeDto getShopHomeList(Long userId){
 		return shopMapper.getShopHomeList(userId);
 	}
 
@@ -197,5 +220,9 @@ public class ShopService extends BaseService<ShopModel> {
 	 */
 	public List<Map<String,Object>> getShopMapList(String name,Integer pageNum,Integer pageSize){
 		return shopMapper.getShopMapList(name, pageNum, pageSize);
+	}
+
+	public List<ShopModel> getExportShopXls(ShopModel shopModel){
+		return shopMapper.listShops(shopModel);
 	}
 }

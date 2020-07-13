@@ -9,7 +9,7 @@
     <result column="shop_id" property="shopId" jdbcType="BIGINT" />
     <result column="shop_name" property="shopName" jdbcType="VARCHAR" />
     <result column="shop_type_id" property="shopTypeId" jdbcType="BIGINT" />
-    <result column="shop_type_name" property="shopTypeIdName" jdbcType="VARCHAR" />
+    <result column="shop_type_name" property="shopTypeName" jdbcType="VARCHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="price" property="price" jdbcType="DECIMAL" />
     <result column="back_img" property="backImg" jdbcType="VARCHAR" />
@@ -21,6 +21,7 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
     <result column="content" property="content" jdbcType="LONGVARCHAR" />
+    <result column="chat_group_id" property="chatGroupId" jdbcType="VARCHAR"/>
   </resultMap>
 
    <resultMap id="couponShopList" type="com.joyzone.platform.core.dto.CouponDto">
@@ -47,6 +48,24 @@
         <result column="userHeadImg" property="userHeadImg" jdbcType="VARCHAR" />
     </resultMap>
 
+    <resultMap id="couponRuleMap" type="com.joyzone.platform.core.dto.CouponRuleDto">
+        <id column="couponId" property="couponId" jdbcType="BIGINT" />
+        <result column="shopId" property="shopId" jdbcType="BIGINT" />
+        <result column="shopImg" property="shopImg" jdbcType="VARCHAR" />
+        <result column="shopName" property="shopName" jdbcType="VARCHAR" />
+        <result column="shopAddress" property="shopAddress" jdbcType="VARCHAR" />
+        <result column="shopPrice" property="shopPrice" jdbcType="DECIMAL" />
+        <result column="shopPhone" property="shopPhone" jdbcType="VARCHAR" />
+        <result column="couponContent" property="couponContent" jdbcType="VARCHAR" />
+        <result column="startTime" property="startTime" jdbcType="DATE" />
+        <result column="personNum" property="personNum" jdbcType="INTEGER" />
+        <result column="shopCollectStatus" property="shopCollectStatus" jdbcType="INTEGER" />
+        <collection property="userJoinList" javaType="ArrayList" column="{couponId=couponId}" select="com.joyzone.platform.core.mapper.ShopCouponMapper.queryUserJoinCouponList"
+                    fetchType="lazy" ofType="com.joyzone.platform.core.dto.UserJoinTeamDto">
+
+        </collection>
+    </resultMap>
+
   <sql id="BaseResultSQL">
     id, shop_id,name,price,back_img,status,result,number,start_time,end_time,create_time,
     update_time,content,number,shop_name,shop_type_id,shop_type_name
@@ -58,7 +77,7 @@
       from shop_coupon
       where 1=1
        <if test="name != '' and name != null">
-         and name like CONCAT('%','${name}','%')
+         and name like CONCAT('%',#{name},'%')
        </if>
       <if test="shopId != null">
          and shop_id = #{shopId}
@@ -67,10 +86,10 @@
          and status = #{status}
       </if>
       <if test="startTime != null">
-        and create_time >= #{startTime}
+        and start_time >= #{startTime}
       </if>
       <if test="endTime != null">
-        and create_time <![CDATA[ <= ]]> #{endTime}
+        and start_time <![CDATA[ <= ]]> #{endTime}
       </if>
   </select>
 
@@ -85,7 +104,7 @@
             st.name AS shopTypeName
         FROM shop s
         LEFT JOIN shop_type st ON st.id = s.shop_type_id
-        WHERE s.status = 1 AND st.status = 1 AND st.type = 2
+        WHERE s.status = 1 AND st.status = 1 AND st.type = 1
     </select>
 
     <select id="getCouponList" resultMap="couponShopList" parameterType="com.joyzone.platform.core.model.ShopCouponModel">
@@ -118,7 +137,9 @@
             <if test="sort == 1">
                 and a.number > (a.joinNum * 2)
             </if>
-            )
+            ) AND id NOT IN (
+                SELECT coupon_id FROM coupon_user WHERE user_id = #{userId} AND STATUS = 0
+               )
         ) sc
         LEFT JOIN shop s ON s.id = sc.shop_id
         WHERE sc.status = 1
@@ -141,4 +162,41 @@
         WHERE sc.id = #{couponId}
     </select>
 
+    <delete id="delCoupons">
+        delete from user where id in
+        <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getCouponRuleInfo" resultMap="couponRuleMap">
+        SELECT
+            sc.id AS couponId,
+            s.id AS shopId,
+            s.`cover_img` AS shopImg,
+            s.`name` AS shopName,
+            s.`address` AS shopAddress,
+            s.`phone` AS shopPhone,
+            s.`price` AS shopPrice,
+            sc.number AS personNum,
+            sc.content AS couponContent,
+            sc.start_time AS startTime,
+            (
+                SELECT sc.status
+                FROM shop_collect sc
+                LEFT JOIN shop_coupon c ON c.shop_id = sc.shop_id
+                WHERE sc.user_id = #{userId} AND c.id = #{couponId}
+            ) AS shopCollectStatus
+        FROM shop_coupon sc
+        LEFT JOIN shop s ON s.id = sc.shop_id
+        WHERE sc.id = #{couponId}
+    </select>
+    
+    <update id="updChatGroupId">
+    update shop_coupon set chat_group_id = #{groupId} where id = #{couponId} and chat_group_id is null
+    </update>
+    
+    <select id="getCouponInfo" resultType="java.util.HashMap">
+    select name, shop_id as shopId, chat_group_id as chatGroupId from shop_coupon where id = #{couponId}
+    </select>
 </mapper>

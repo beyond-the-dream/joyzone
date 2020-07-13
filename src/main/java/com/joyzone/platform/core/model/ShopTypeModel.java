@@ -1,6 +1,7 @@
 package com.joyzone.platform.core.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.joyzone.platform.common.utils.DateUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,6 +33,13 @@ public class ShopTypeModel extends BaseModel{
     @ApiModelProperty("0 : 组队类型   1：体验类型")
     private Integer type;
 
+    /**
+     * 店家类型图片
+     */
+    @Column(name = "type_image")
+    @ApiModelProperty("店家类型图片")
+    private String typeImage;
+
     @ApiModelProperty("父级ID")
     private Long pid;
 
@@ -41,17 +49,24 @@ public class ShopTypeModel extends BaseModel{
     @ApiModelProperty("0 失效  1 正常")
     private Integer status;
 
+    @Column(name = "sort")
+    @ApiModelProperty("排序")
+    private String sort;
+
     @Column(name = "create_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     private Date createTime;
 
     @Column(name = "update_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     private Date updateTime;
+    
+    @Column(name = "chat_group_id")
+    private String chatGroupId;
 
-    /**
+	/**
      * @return id
      */
     public Long getId() {
@@ -101,6 +116,14 @@ public class ShopTypeModel extends BaseModel{
         this.type = type;
     }
 
+    public String getTypeImage() {
+        return typeImage;
+    }
+
+    public void setTypeImage(String typeImage) {
+        this.typeImage = typeImage;
+    }
+
     /**
      * @return pid
      */
@@ -133,6 +156,14 @@ public class ShopTypeModel extends BaseModel{
         this.status = status;
     }
 
+    public String getSort() {
+        return sort;
+    }
+
+    public void setSort(String sort) {
+        this.sort = sort;
+    }
+
     /**
      * @return create_time
      */
@@ -160,4 +191,12 @@ public class ShopTypeModel extends BaseModel{
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+    
+    public String getChatGroupId() {
+		return chatGroupId;
+	}
+
+	public void setChatGroupId(String chatGroupId) {
+		this.chatGroupId = chatGroupId;
+	}
 }

@@ -1,9 +1,12 @@
 package com.joyzone.platform.core.model;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.joyzone.platform.common.utils.DateUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.models.properties.IntegerProperty;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import javax.persistence.*;
@@ -28,6 +31,9 @@ public class TeamModel extends BaseModel {
      */
     @ApiModelProperty("活动开始时间")
     @Column(name = "start_time")
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
+    @Excel(name="活动开始时间",exportFormat = "yyyy-MM-dd HH:mm")
     private Date startTime;
 
     /**
@@ -59,12 +65,14 @@ public class TeamModel extends BaseModel {
      * 创建时间
      */
     @Column(name = "create_time")
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     private Date createTime;
 
     /**
      * 更新时间
      */
     @Column(name = "update_time")
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     private Date updateTime;
 
     /**
@@ -82,8 +90,12 @@ public class TeamModel extends BaseModel {
     @ApiModelProperty("希望组队成员性别比例：0：约1:1   1：女>0  2随便")
     @Column(name = "sex_want")
     private Integer sexWant;
+    
+    @ApiModelProperty("组队时自动创建聊天群")
+    @Column(name = "chat_group_id")
+    private String chatGroupId;
 
-    /**
+	/**
      * @return id
      */
     public Long getId() {
@@ -256,4 +268,12 @@ public class TeamModel extends BaseModel {
     public void setSexWant(Integer sexWant) {
         this.sexWant = sexWant;
     }
+    
+    public String getChatGroupId() {
+		return chatGroupId;
+	}
+
+	public void setChatGroupId(String chatGroupId) {
+		this.chatGroupId = chatGroupId;
+	}
 }

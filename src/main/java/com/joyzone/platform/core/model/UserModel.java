@@ -40,6 +40,13 @@ public class UserModel extends BaseModel{
     @Column(name = "user_name")
     private String userName;
 
+    /**
+     * 畅玩号
+     */
+    @ApiModelProperty("畅玩号")
+    @Column(name = "play_num")
+    private String playNum;
+
     @Column(name="login_name")
     @ApiModelProperty("用户登录账号")
     private String loginName;
@@ -82,6 +89,7 @@ public class UserModel extends BaseModel{
      */
     @ApiModelProperty("生日(yyyy-MM-dd)")
     @DateTimeFormat(pattern = DateUtils.DATE_PATTERN)
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     @Excel(name="生日",exportFormat = DateUtils.DATE_PATTERN)
     private Date birthday;
 
@@ -123,8 +131,13 @@ public class UserModel extends BaseModel{
     @ApiModelProperty("学历")
     @Excel(name = "学历")
     private String education;
-
+    
     /**
+     * @ApiModelProperty("环信注册用户密码")
+     */
+    private String chatIdMd5;
+
+	/**
      * 年龄
      */
     private Integer age;
@@ -163,6 +176,14 @@ public class UserModel extends BaseModel{
      */
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getPlayNum() {
+        return playNum;
+    }
+
+    public void setPlayNum(String playNum) {
+        this.playNum = playNum;
     }
 
     /**
@@ -328,4 +349,11 @@ public class UserModel extends BaseModel{
     public void setStatus(Integer status) {
         this.status = status;
     }
+    
+    public String getChatIdMd5() {
+		return chatIdMd5;
+	}
+	public void setChatIdMd5(String chatIdMd5) {
+		this.chatIdMd5 = chatIdMd5;
+	}
 }

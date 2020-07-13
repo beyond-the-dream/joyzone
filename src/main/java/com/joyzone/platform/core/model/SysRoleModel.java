@@ -1,5 +1,10 @@
 package com.joyzone.platform.core.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.joyzone.platform.common.utils.DateUtils;
+import io.swagger.annotations.ApiModelProperty;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 import javax.persistence.*;
 
@@ -18,12 +23,14 @@ public class SysRoleModel  extends BaseModel{
      * 创建时间
      */
     @Column(name = "create_time")
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     private Date createTime;
 
     /**
      * 修改时间
      */
     @Column(name = "update_time")
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     private Date updateTime;
     
     /**
@@ -37,6 +44,16 @@ public class SysRoleModel  extends BaseModel{
 
 	@Transient
     private Long[] menuIds;
+
+	@Transient
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @ApiModelProperty("开始时间 yyyy-MM-dd HH:mm")
+    private Date startTime;
+
+	@Transient
+    @DateTimeFormat(pattern = DateUtils.DATE_TIME_PATTERN)
+    @ApiModelProperty("结束时间 yyyy-MM-dd HH:mm")
+    private Date endTime;
 
 	/**
      * @return id
@@ -129,4 +146,20 @@ public class SysRoleModel  extends BaseModel{
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
 }

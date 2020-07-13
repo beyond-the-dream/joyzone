@@ -1,6 +1,8 @@
 package com.joyzone.platform.core.model;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.joyzone.platform.common.utils.DateUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,6 +15,11 @@ public class DocumentModel extends BaseModel{
 
     protected static final String TABLE_NAME = "document";
 
+    public DocumentModel(){}
+
+    public DocumentModel(String filePath){
+        this.filePath = filePath;
+    }
     /**
      * 自增长主键
      */
@@ -51,6 +58,7 @@ public class DocumentModel extends BaseModel{
      */
     @Column(name = "create_time")
     @ApiModelProperty("创建时间")
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN)
     private Date createTime;
 
     /**
@@ -58,6 +66,7 @@ public class DocumentModel extends BaseModel{
      */
     @Column(name = "update_time")
     @ApiModelProperty("更新时间")
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN)
     private Date updateTime;
 
     /**

@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.joyzone.platform.common.utils.R;
 import com.joyzone.platform.core.base.BaseService;
 import com.joyzone.platform.core.dto.CouponDto;
+import com.joyzone.platform.core.dto.CouponRuleDto;
 import com.joyzone.platform.core.dto.InvitingDto;
 import com.joyzone.platform.core.mapper.ShopCouponMapper;
 import com.joyzone.platform.core.model.InvitingModel;
@@ -54,12 +55,27 @@ public class ShopCouponService extends BaseService<ShopCouponModel> {
         return shopCouponMapper.getCouponShopList(shopCouponModel);
     }
 
-    public  List<CouponDto> getCouponList(ShopCouponModel shopCouponModel, Integer sort){
-        return shopCouponMapper.getCouponList(shopCouponModel,sort);
+    public  List<CouponDto> getCouponList(ShopCouponModel shopCouponModel, Long userId,Integer sort){
+        return shopCouponMapper.getCouponList(shopCouponModel,userId,sort);
     }
 
     public Map<String,Object> checkCouponIfSuccess(Long couponId){
         return shopCouponMapper.checkCouponIfSuccess(couponId);
     }
 
+    public int delCoupons(Long[] ids){
+        return shopCouponMapper.delCoupons(ids);
+    }
+
+    public CouponRuleDto getCouponRuleInfo(Long couponId,Long userId){
+        return shopCouponMapper.getCouponRuleInfo(couponId,userId);
+    }
+
+    public int updChatGroupId(String groupId, Long couponId) {
+    	return shopCouponMapper.updChatGroupId(groupId, couponId);
+    }
+    
+    public Map<String,Object> getCouponInfo(Long couponId) {
+    	return shopCouponMapper.getCouponInfo(couponId);
+    }
 }

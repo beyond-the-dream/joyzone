@@ -1,5 +1,7 @@
 package com.joyzone.platform.core.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.joyzone.platform.common.utils.DateUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -24,21 +26,17 @@ public class InvitingUserModel extends BaseModel{
     private Long userId;
 
     /**
-     * 0 退出 1 接受
+     * 状态：0：加入；1：退出
      */
-    @ApiModelProperty("0 退出 1 接受")
+    @ApiModelProperty("状态：0：加入；1：退出")
     private Integer status;
 
-    /**
-     * 0收到正式函 1未收到
-     */
-    @ApiModelProperty("0收到正式函 1未收到")
-    private Integer confirm;
-
     @Column(name = "create_time")
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     private Date createTime;
 
     @Column(name = "update_time")
+    @JsonFormat(pattern = DateUtils.DATE_TIME_PATTERN, timezone = "GMT+8")
     private Date updateTime;
 
     /**
@@ -93,20 +91,12 @@ public class InvitingUserModel extends BaseModel{
     }
 
     /**
-     * 设置0 退出 1 接受
+     * 状态：0：加入；1：退出
      *
-     * @param status 0 退出 1 接受
+     * @param status 状态：0：加入；1：退出
      */
     public void setStatus(Integer status) {
         this.status = status;
-    }
-
-    public Integer getConfirm() {
-        return confirm;
-    }
-
-    public void setConfirm(Integer confirm) {
-        this.confirm = confirm;
     }
 
     /**
